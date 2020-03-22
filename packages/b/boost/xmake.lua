@@ -38,18 +38,20 @@ package ("boost")
   on_load("windows", function (package)
     local vs_runtime = package:config("vs_runtime")
     for _, libname in ipairs(libnames) do
-      local linkname = "libboost_" .. libname
-      if package:config("multi") then
-        linkname = linkname .. "-mt"
+      if package:config(libname) then
+        local linkname = "libboost_" .. libname
+        if package:config("multi") then
+          linkname = linkname .. "-mt"
+        end
+        if vs_runtime == "MT" then
+          linkname = linkname .. "-s"
+        elseif vs_runtime == "MTd" then
+          linkname = linkname .. "-sgd"
+        elseif vs_runtime == "MDd" then
+          linkname = linkname .. "-gd"
+        end
+        package:add("links", linkname)
       end
-      if vs_runtime == "MT" then
-        linkname = linkname .. "-s"
-      elseif vs_runtime == "MTd" then
-        linkname = linkname .. "-sgd"
-      elseif vs_runtime == "MDd" then
-        linkname = linkname .. "-gd"
-      end
-      package:add("links", linkname)
     end
   end)
 
